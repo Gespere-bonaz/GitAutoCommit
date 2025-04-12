@@ -1,7 +1,7 @@
 import time
 import os
-from watchdog.observers import Observer
-from watchdog.events import FileSystemEventHandler
+from watchdog.observers import Observer # type: ignore
+from watchdog.events import FileSystemEventHandler # type: ignore
 from colorama import Fore, Style
 from .git_handler import GitHandler
 from .utils import get_current_directory
