@@ -1,2 +1,4 @@
 colorama==0.4.6
 watchdog==6.0.0
+win10toast==0.9
+commit_name="mise a jours de requirements.txt"
