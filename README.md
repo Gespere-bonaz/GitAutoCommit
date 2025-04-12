@@ -1,6 +1,7 @@
 # Git Auto Commit
 
 ## 📌 Introduction
+
 Git Auto Commit is a tool that automatically commits modified files with a confirmation prompt. If no response is given within 2 minutes, the commit is executed automatically.
 
 This tool is useful for developers who frequently modify files and want to ensure their changes are committed regularly without manual intervention.
@@ -32,14 +33,18 @@ git_observer/
 ## 🔧 Installation
 
 ### 📥 Install from GitHub
+
 ```bash
 git clone https://github.com/k2pme/gitobserver.git
 cd gitobserver
 pip install -r requirements.txt
+python git_observer/main.py ou python -m git_observer.main
 ```
 
 ### 📦 Install via pip
+
 Once the package is published on PyPI:
+
 ```bash
 pip install gitobserver
 git_observer
@@ -48,6 +53,7 @@ git_observer
 ---
 
 ## 👥 Contributors
+
 - **k2pme** - [GitHub Profile](https://github.com/k2pme)
 
 We welcome contributions from the community! 🚀
@@ -55,6 +61,7 @@ We welcome contributions from the community! 🚀
 ---
 
 ## 💡 How to Contribute
+
 We appreciate your help in improving this project. Follow these steps to contribute:
 
 1. **Fork the repository** on GitHub.
@@ -79,6 +86,7 @@ We appreciate your help in improving this project. Follow these steps to contrib
 ---
 
 ## 🙏 Acknowledgments
+
 Special thanks to all contributors and open-source maintainers who make projects like this possible.
 
 If you find this project helpful, please ⭐ star the repository on GitHub!
@@ -86,6 +94,7 @@ If you find this project helpful, please ⭐ star the repository on GitHub!
 ---
 
 ### 📧 Contact
+
 For any inquiries or feature requests, feel free to open an issue or contact us via GitHub.
 
 🚀 Happy Coding!# gitobserver
