@@ -12,6 +12,7 @@ class GitAutoCommitHandler(FileSystemEventHandler):
     def __init__(self):
         super().__init__()
         self.git_handler = GitHandler()
+        self.git_handler.start_notification_thread()  # Démarrage du thread de notification
 
     def on_modified(self, event):
         """Déclenché lorsqu'un fichier est modifié."""
@@ -20,6 +21,9 @@ class GitAutoCommitHandler(FileSystemEventHandler):
 
         file_path = event.src_path
         print(f"{Fore.CYAN}🔄 Fichier modifié : {file_path}{Style.RESET_ALL}")
+
+        # Met à jour le temps de la dernière modification
+        self.git_handler.update_modification_time()
 
         commit_message = self.git_handler.extract_commit_message(file_path)
         if commit_message:
