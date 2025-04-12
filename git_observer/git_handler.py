@@ -3,7 +3,7 @@ import time
 from colorama import Fore, Style
 import threading
 from datetime import datetime
-from win10toast import ToastNotifier # type: ignore
+from win10toast import ToastNotifier
 import tkinter as tk
 from tkinter import messagebox, simpledialog, ttk
 
@@ -17,27 +17,31 @@ class CommitDialog:
         """Gestion de l'annulation"""
         self.result = False
         self.message = None
-        if self.dialog:
-            self.dialog.quit()
+        self.dialog.destroy()  # Utiliser destroy() au lieu de quit()
 
     def on_ok(self, event=None):
         """Gestion de la validation"""
-        if hasattr(self, 'entry') and self.entry.get().strip():
+        if self.entry.get().strip():
             self.message = self.entry.get().strip()
             self.result = True
-            self.dialog.quit()
+            self.dialog.destroy()  # Utiliser destroy() au lieu de quit()
         else:
             messagebox.showwarning("Attention", "Veuillez entrer un message de commit")
 
     def show(self):
         """Affiche la fenêtre de dialogue"""
-        self.dialog = tk.Tk()
+        # Création d'une nouvelle fenêtre root
+        root = tk.Tk()
+        root.withdraw()  # Cache la fenêtre root
+        
+        self.dialog = tk.Toplevel(root)  # Utiliser Toplevel au lieu de Tk
         self.dialog.title("Git Auto Commit")
         
         # Configuration de la fenêtre
         self.dialog.protocol("WM_DELETE_WINDOW", self.on_cancel)
         self.dialog.attributes('-topmost', True)
         self.dialog.focus_force()
+        self.dialog.grab_set()  # Rend la fenêtre modale
         
         # Centrer la fenêtre
         window_width = 400
@@ -88,13 +92,9 @@ class CommitDialog:
         self.dialog.bind('<Return>', self.on_ok)
         self.dialog.bind('<Escape>', self.on_cancel)
         
-        self.dialog.mainloop()
+        self.dialog.wait_window()  # Attendre que la fenêtre soit fermée
+        root.destroy()  # Nettoyer la fenêtre root
         
-        try:
-            self.dialog.destroy()
-        except:
-            pass
-            
         return self.result, self.message
 
 class GitHandler:
@@ -106,6 +106,7 @@ class GitHandler:
         # self.NOTIFICATION_DELAY = 1800  # 30 minutes
         self.NOTIFICATION_DELAY = 20  # Changez à 60 secondes pour tester
         self.toaster = ToastNotifier()
+        self.use_gui = True  # Option pour choisir l'interface
 
     @staticmethod
     def extract_commit_message(file_path):
@@ -134,7 +135,7 @@ class GitHandler:
             time.sleep(60)  # Vérifie toutes les minutes
 
     def notify_user(self):
-        """Notifie l'utilisateur avec une fenêtre modale et une notification système"""
+        """Notifie l'utilisateur avec une fenêtre modale et/ou le terminal"""
         # Notification système Windows
         self.toaster.show_toast(
             "Git Auto Commit",
@@ -143,15 +144,20 @@ class GitHandler:
             threaded=True
         )
 
-        # Création de la boîte de dialogue directement
-        dialog = CommitDialog()
-        result, message = dialog.show()
-        
+        if self.use_gui:
+            # Interface graphique
+            dialog = CommitDialog()
+            result, message = dialog.show()
+        else:
+            # Interface console
+            print(f"{Fore.YELLOW}⚠️ Des modifications sont en attente depuis 30 minutes !{Style.RESET_ALL}")
+            message = input(f"{Fore.GREEN}✏️ Entrez votre message de commit (ou 'skip' pour ignorer) : {Style.RESET_ALL}")
+            result = message != 'skip'
+
         if result and message:
             self.git_commit_push(message)
         else:
             print(f"{Fore.YELLOW}Commit annulé - Les modifications restent en attente.{Style.RESET_ALL}")
-            # Réinitialiser le timer pour une nouvelle notification plus tard
             self.last_modification_time = time.time()
 
     def start_notification_thread(self):
