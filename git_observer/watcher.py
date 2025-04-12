@@ -38,7 +38,7 @@ def start_watcher():
     event_handler = GitAutoCommitHandler()
     observer = Observer()
     observer.schedule(event_handler, watched_dir, recursive=True)
-
+    
     try:
         observer.start()
         while True:
@@ -47,11 +47,12 @@ def start_watcher():
                                         capture_output=True, 
                                         text=True).stdout.strip()
             
+            # Attend qu'il y ait des modifications avant d'afficher le prompt
             if status_output:
-                # Affiche le message uniquement si des modifications sont détectées
-                message = input(f"{Fore.CYAN}💡 Vous pouvez entrer un message de commit à tout moment : {Style.RESET_ALL}")
-                if message:
+                message = input(f"{Fore.CYAN}💡 Vous pouvez entrer un message de commit : {Style.RESET_ALL}")
+                if message and not message.startswith("[main"):
                     event_handler.git_handler.git_commit_push(message)
+            
             time.sleep(1)
             
     except KeyboardInterrupt:
