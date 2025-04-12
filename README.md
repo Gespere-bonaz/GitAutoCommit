@@ -48,7 +48,22 @@ Once the package is published on PyPI:
 
 ```bash
 pip install gitobserver
-git_observer
+python git_observer/main.py ou python -m git_observer.main
+```
+
+---
+
+After installation, you don’t need to manually import the git_observer folder into your projects.
+Just run the following command from your project directory :
+
+```bash
+python -m git_observer.main
+```
+
+Ou
+
+```bash
+python git_observer/main.py
 ```
 
 ---
