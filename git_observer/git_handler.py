@@ -11,83 +11,90 @@ class CommitDialog:
     def __init__(self):
         self.result = None
         self.message = None
-        
+        self.dialog = None
+
+    def on_cancel(self, event=None):
+        """Gestion de l'annulation"""
+        self.result = False
+        self.message = None
+        if self.dialog:
+            self.dialog.quit()
+
+    def on_ok(self, event=None):
+        """Gestion de la validation"""
+        if hasattr(self, 'entry') and self.entry.get().strip():
+            self.message = self.entry.get().strip()
+            self.result = True
+            self.dialog.quit()
+        else:
+            messagebox.showwarning("Attention", "Veuillez entrer un message de commit")
+
     def show(self):
-        # Création de la fenêtre principale
-        dialog = tk.Tk()
-        dialog.title("Git Auto Commit")
+        """Affiche la fenêtre de dialogue"""
+        self.dialog = tk.Tk()
+        self.dialog.title("Git Auto Commit")
         
-        # Forcer la fenêtre au premier plan
-        dialog.lift()
-        dialog.attributes('-topmost', True)
-        dialog.focus_force()
+        # Configuration de la fenêtre
+        self.dialog.protocol("WM_DELETE_WINDOW", self.on_cancel)
+        self.dialog.attributes('-topmost', True)
+        self.dialog.focus_force()
         
         # Centrer la fenêtre
         window_width = 400
         window_height = 200
-        screen_width = dialog.winfo_screenwidth()
-        screen_height = dialog.winfo_screenheight()
+        screen_width = self.dialog.winfo_screenwidth()
+        screen_height = self.dialog.winfo_screenheight()
         center_x = int(screen_width/2 - window_width/2)
         center_y = int(screen_height/2 - window_height/2)
-        dialog.geometry(f'{window_width}x{window_height}+{center_x}+{center_y}')
-        
-        # Style
-        dialog.configure(bg='#f0f0f0')
-        style = ttk.Style()
-        style.configure('Custom.TFrame', background='#f0f0f0')
-        style.configure('Custom.TButton', padding=5, background='#e0e0e0', foreground='black')
-        style.configure('Custom.TLabel', background='#f0f0f0', foreground='black')
+        self.dialog.geometry(f'{window_width}x{window_height}+{center_x}+{center_y}')
         
         # Frame principal
-        main_frame = ttk.Frame(dialog, style='Custom.TFrame', padding="20")
+        main_frame = ttk.Frame(self.dialog, padding="20")
         main_frame.pack(fill=tk.BOTH, expand=True)
         
         # Message
         ttk.Label(main_frame, 
                  text="Des modifications sont en attente depuis 30 minutes!", 
-                 wraplength=350, 
-                 justify="center",
-                 style='Custom.TLabel').pack(pady=10)
+                 wraplength=350,
+                 justify="center").pack(pady=10)
         
         # Champ de saisie
-        ttk.Label(main_frame, 
-                 text="Message de commit:",
-                 style='Custom.TLabel').pack(pady=5)
-        message_entry = ttk.Entry(main_frame, width=40)
-        message_entry.pack(pady=5)
-        
-        def on_ok():
-            self.message = message_entry.get()
-            self.result = True
-            dialog.destroy()
-            
-        def on_cancel():
-            self.result = False
-            dialog.destroy()
+        ttk.Label(main_frame, text="Message de commit:").pack(pady=5)
+        self.entry = ttk.Entry(main_frame, width=40)
+        self.entry.pack(pady=5)
+        self.entry.focus()
         
         # Boutons
-        button_frame = ttk.Frame(main_frame, style='Custom.TFrame')
+        button_frame = ttk.Frame(main_frame)
         button_frame.pack(pady=20)
         
-        commit_btn = tk.Button(button_frame, 
-                             text="Commit", 
-                             command=on_ok,
-                             bg='#4CAF50',
-                             fg='white',
-                             padx=20,
-                             pady=5)
-        commit_btn.pack(side=tk.LEFT, padx=5)
+        tk.Button(button_frame,
+                 text="Commit",
+                 command=self.on_ok,
+                 bg='#4CAF50',
+                 fg='white',
+                 padx=20,
+                 pady=5).pack(side=tk.LEFT, padx=5)
         
-        cancel_btn = tk.Button(button_frame, 
-                              text="Annuler",
-                              command=on_cancel,
-                              bg='#f44336',
-                              fg='white',
-                              padx=20,
-                              pady=5)
-        cancel_btn.pack(side=tk.LEFT, padx=5)
+        tk.Button(button_frame,
+                 text="Annuler",
+                 command=self.on_cancel,
+                 bg='#f44336',
+                 fg='white',
+                 padx=20,
+                 pady=5).pack(side=tk.LEFT, padx=5)
         
-        dialog.mainloop()
+        # Raccourcis clavier
+        self.dialog.bind('<Return>', self.on_ok)
+        self.dialog.bind('<Escape>', self.on_cancel)
+        
+        self.dialog.mainloop()
+        
+        try:
+            self.dialog.destroy()
+        except:
+            pass
+            
         return self.result, self.message
 
 class GitHandler:
@@ -136,23 +143,16 @@ class GitHandler:
             threaded=True
         )
 
-        # Création d'un thread pour la fenêtre modale
-        def show_dialog():
-            root = tk.Tk()
-            root.withdraw()  # Cache la fenêtre racine
-            dialog = CommitDialog()
-            result, message = dialog.show()
-            
-            if result and message:
-                self.git_commit_push(message)
-            else:
-                print(f"{Fore.YELLOW}Les modifications restent en attente.{Style.RESET_ALL}")
-
-        # Exécute la fenêtre modale dans le thread principal
-        root = tk.Tk()
-        root.withdraw()
-        root.after(1000, show_dialog)  # Attend 1 seconde pour laisser la notification système s'afficher
-        root.mainloop()
+        # Création de la boîte de dialogue directement
+        dialog = CommitDialog()
+        result, message = dialog.show()
+        
+        if result and message:
+            self.git_commit_push(message)
+        else:
+            print(f"{Fore.YELLOW}Commit annulé - Les modifications restent en attente.{Style.RESET_ALL}")
+            # Réinitialiser le timer pour une nouvelle notification plus tard
+            self.last_modification_time = time.time()
 
     def start_notification_thread(self):
         """Démarre le thread de notification"""

@@ -6,6 +6,9 @@ from colorama import Fore, Style
 from .git_handler import GitHandler
 from .utils import get_current_directory
 
+#Gespere test 
+# from .test import test_git_handler
+
 class GitAutoCommitHandler(FileSystemEventHandler):
     """Classe qui écoute les modifications et pousse les commits automatiquement."""
     
