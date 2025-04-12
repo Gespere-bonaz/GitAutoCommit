@@ -103,8 +103,8 @@ class GitHandler:
     def __init__(self):
         self.last_modification_time = None
         self.notification_thread = None
-        # self.NOTIFICATION_DELAY = 1800  # 30 minutes
-        self.NOTIFICATION_DELAY = 20  # Changez à 60 secondes pour tester
+        self.NOTIFICATION_DELAY = 1800  # 30 minutes
+        #self.NOTIFICATION_DELAY = 20  # Changez à 60 secondes pour tester
         self.toaster = ToastNotifier()
         self.use_gui = True  # Option pour choisir l'interface
 
