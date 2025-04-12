@@ -2,11 +2,11 @@ import os
 import time
 import argparse
 import hashlib
-from watchdog.events import FileSystemEventHandler
+from watchdog.events import FileSystemEventHandler # type: ignore
 from colorama import Fore, Style
 from git_handler import git_commit_push
 from git_observer.utils import get_current_directory
-from watchdog.observers import Observer
+from watchdog.observers import Observer # type: ignore
 import threading
 
 # Définition des modes
