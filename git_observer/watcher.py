@@ -39,6 +39,11 @@ def start_watcher():
     observer = Observer()
     observer.schedule(event_handler, watched_dir, recursive=True)
     
+    # Variables pour suivre l'état
+    last_modification_time = 0
+    last_status = None
+    prompt_shown = False
+    
     try:
         observer.start()
         while True:
@@ -47,11 +52,26 @@ def start_watcher():
                                         capture_output=True, 
                                         text=True).stdout.strip()
             
-            # Attend qu'il y ait des modifications avant d'afficher le prompt
-            if status_output:
-                message = input(f"{Fore.CYAN}💡 Vous pouvez entrer un message de commit : {Style.RESET_ALL}")
+            current_time = time.time()
+            
+            # Affiche le prompt uniquement si:
+            # 1. Il y a des modifications
+            # 2. Au moins 2 secondes se sont écoulées depuis la dernière modification
+            # 3. Le prompt n'a pas déjà été affiché
+            if (status_output and 
+                current_time - last_modification_time > 2 and 
+                not prompt_shown):
+                print(f"\n{Fore.CYAN}💡 Vous pouvez entrer un message de commit : {Style.RESET_ALL}", end='', flush=True)
+                message = input()
                 if message and not message.startswith("[main"):
                     event_handler.git_handler.git_commit_push(message)
+                prompt_shown = True
+            
+            # Met à jour les variables de suivi
+            if status_output != last_status:
+                last_status = status_output
+                last_modification_time = current_time
+                prompt_shown = False
             
             time.sleep(1)
             
