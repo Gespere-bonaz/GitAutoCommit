@@ -2,9 +2,10 @@
 
 ## 📌 Introduction
 
-Git Auto Commit is a tool that automatically commits modified files with a confirmation prompt. If no response is given within 2 minutes, the commit is executed automatically.
+Git Auto Commit is a tool that automatically commits modified files with a confirmation prompt.
+If no commit is made within 15 minutes after detecting changes, a message and a modal are displayed to the user as a reminder to perform the commit.
 
-This tool is useful for developers who frequently modify files and want to ensure their changes are committed regularly without manual intervention.
+This tool is especially useful for developers who frequently modify files and want to ensure their changes are committed regularly without manual intervention.
 
 ---
 
@@ -55,6 +56,7 @@ git_observer
 ## 👥 Contributors
 
 - **k2pme** - [GitHub Profile](https://github.com/k2pme)
+- **Gespere-bonaz** - [GitHub Profile](https://github.com/Gespere-bonaz)
 
 We welcome contributions from the community! 🚀
 
