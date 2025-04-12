@@ -3,7 +3,7 @@ import time
 from colorama import Fore, Style
 import threading
 from datetime import datetime
-from win10toast import ToastNotifier
+from win10toast import ToastNotifier # type: ignore
 import tkinter as tk
 from tkinter import messagebox, simpledialog, ttk
 
