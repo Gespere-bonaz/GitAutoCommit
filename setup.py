@@ -12,7 +12,8 @@ setup(
     packages=find_packages(),  # Trouve automatiquement les modules
     install_requires=[
         "watchdog",
-        "colorama"
+        "colorama",
+        "win10toast"
     ],
     classifiers=[
         "Programming Language :: Python :: 3",
