@@ -1,3 +1,6 @@
-colorama==0.4.6
+﻿colorama==0.4.6
+pypiwin32==223
+pywin32==310
+setuptools==78.1.0
 watchdog==6.0.0
 win10toast==0.9
